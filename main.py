@@ -71,7 +71,30 @@ class Main(object):
     def on_button_clicked(self, button):
         #self.progress_bar.set_fraction(self.progress_bar.get_fraction() + 0.01)
         print("Hello World!")
-
+    
+    def on_import_clicked(self, button):
+        dialog = Gtk.FileChooserDialog(
+            title="Please choose a file",
+            parent=self.window,
+            action=Gtk.FileChooserAction.OPEN,
+        )
+        dialog.add_buttons(
+            Gtk.STOCK_CANCEL,
+            Gtk.ResponseType.CANCEL,
+            Gtk.STOCK_OPEN,
+            Gtk.ResponseType.OK
+        )
+        filter_text = Gtk.FileFilter()
+        filter_text.set_name("CSV files")
+        filter_text.add_mime_type("text/csv")
+        dialog.add_filter(filter_text)
+        response = dialog.run()
+        if response == Gtk.ResponseType.OK:
+            print("Open clicked")
+            print("File selected: " + dialog.get_filename())
+        elif response == Gtk.ResponseType.CANCEL:
+            print("Cancel clicked")
+        dialog.hide()
 
 if __name__ == "__main__":
     main = Main()

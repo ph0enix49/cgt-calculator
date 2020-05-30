@@ -24,3 +24,10 @@ class Transaction(models.Model):
     local_value = models.DecimalField("value condsidering exchange rates", decimal_places=2, max_digits=6)
     fees = models.DecimalField("all of the associated fees", decimal_places=2, max_digits=6)
     order_id = models.CharField("unique transaction ID", unique=True, max_length=50)
+
+
+portfolio is a condensed 3D view of all transactions. Each entry (share) has a history of buys and sells.
+
+transaction history for each share grouped by purchase price sorted by date.
+* Each buy event adds a new column with the number of shares and price
+* Each sell event removes shares from the start
