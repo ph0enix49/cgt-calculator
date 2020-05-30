@@ -3,6 +3,8 @@ import gi
 gi.require_version("Gtk", "3.0")
 from gi.repository import Gtk, Gio, Pango
 
+from lib.io import Importer
+
 
 class Main(object):
     def __init__(self):
@@ -11,8 +13,10 @@ class Main(object):
         self.builder.connect_signals(self)
         self.main_box = self.builder.get_object("main_box")
         self.window = self.builder.get_object("main_window")
+        self.portfolio_view = self.builder.get_object("portfolio_view")
+        self.transactions_view = self.builder.get_object("transactions_view")
         self.build_portfolio()
-        self.build_transactions()
+        #self.build_transactions()
         """
         self.progress_bar = builder.get_object("progress_bar")
         self.header = builder.get_object("header")
@@ -90,11 +94,35 @@ class Main(object):
         dialog.add_filter(filter_text)
         response = dialog.run()
         if response == Gtk.ResponseType.OK:
-            print("Open clicked")
-            print("File selected: " + dialog.get_filename())
-        elif response == Gtk.ResponseType.CANCEL:
-            print("Cancel clicked")
+            csv_file = dialog.get_filename()
+            print("file selected:", csv_file)
+            csv_importer = Importer(csv_file)
+            out = csv_importer.import_csv()
+            self.populate(
+                self.transactions_view,
+                out,
+                [
+                    "Date_Time",
+                    "Exchange",
+                ]
+                )
         dialog.hide()
+
+    def populate(self, view, data, cols=None):
+        """Populates given view with the data"""
+        if cols:
+            data = data[cols]
+        # create a store
+        store = Gtk.ListStore(*([str] * len(data.columns)))
+        for row in data.values:
+            converted = [str(x) for x in row]
+            store.append(converted)
+        view.set_model(store)
+        renderer = Gtk.CellRendererText()
+        for index, column in enumerate(data.columns):
+            view.append_column(
+                Gtk.TreeViewColumn(column, renderer, text=index),
+            )
 
 if __name__ == "__main__":
     main = Main()
