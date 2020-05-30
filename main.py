@@ -102,8 +102,16 @@ class Main(object):
                 self.transactions_view,
                 out,
                 [
-                    "Date_Time",
+                    "Date_Time",  # move to settings
+                    "Product",
                     "Exchange",
+                    "Number",
+                    "Price",
+                    "Local value",
+                    "Value",
+                    "Exchange rate",
+                    "Fee",
+                    "Total",
                 ]
                 )
         dialog.hide()
