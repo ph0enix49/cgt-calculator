@@ -4,6 +4,7 @@ gi.require_version("Gtk", "3.0")
 from gi.repository import Gtk, Gio, Pango
 
 from lib.io import Importer
+from lib.portfolio import Portfolio
 
 
 class Main(object):
@@ -15,7 +16,7 @@ class Main(object):
         self.window = self.builder.get_object("main_window")
         self.portfolio_view = self.builder.get_object("portfolio_view")
         self.transactions_view = self.builder.get_object("transactions_view")
-        self.build_portfolio()
+        #self.build_portfolio()
         #self.build_transactions()
         """
         self.progress_bar = builder.get_object("progress_bar")
@@ -47,26 +48,6 @@ class Main(object):
         ]
         for col in columns:
             portfolio_view.append_column(col)
-
-    def build_transactions(self):
-        store = Gtk.ListStore(str, str, float)
-        store.append(["The Art of Computer Programming",
-                         "Donald E. Knuth", 25.46])
-        transactions_view = self.builder.get_object("transactions_view")
-        transactions_view.set_model(store)
-
-        renderer = Gtk.CellRendererText()
-        italic_renderer = Gtk.CellRendererText(
-            style=Pango.Style.ITALIC,
-            alignment=Pango.Alignment.RIGHT,
-        )
-        columns = [
-            Gtk.TreeViewColumn("Title", renderer, text=0),
-            Gtk.TreeViewColumn("Author", renderer, text=1),
-            Gtk.TreeViewColumn("Price", italic_renderer, text=2),
-        ]
-        for col in columns:
-            transactions_view.append_column(col)
         
 
     def on_destroy(self, *args):
@@ -97,10 +78,12 @@ class Main(object):
             csv_file = dialog.get_filename()
             print("file selected:", csv_file)
             csv_importer = Importer(csv_file)
-            out = csv_importer.import_csv()
+            transations_data = csv_importer.import_csv()
+            portfolio = Portfolio(transations_data)
+            portfolio_data = portfolio.plain_view()
             self.populate(
                 self.transactions_view,
-                out,
+                transations_data,
                 [
                     "Date_Time",  # move to settings
                     "Product",
@@ -114,6 +97,10 @@ class Main(object):
                     "Total",
                 ]
                 )
+            self.populate(
+                self.portfolio_view,
+                portfolio_data,
+            )
         dialog.hide()
 
     def populate(self, view, data, cols=None):
