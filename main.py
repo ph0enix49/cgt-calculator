@@ -14,41 +14,15 @@ class Main(object):
         self.builder.connect_signals(self)
         self.main_box = self.builder.get_object("main_box")
         self.window = self.builder.get_object("main_window")
+        self.main_menu = self.builder.get_object("main_menu")
+        self.menu_button = self.builder.get_object("menu_button")
+        self.header = self.builder.get_object("header")
+        test_menu = Gtk.MenuItem(label="lp")
+        self.main_menu.append(test_menu)
         self.portfolio_view = self.builder.get_object("portfolio_view")
         self.transactions_view = self.builder.get_object("transactions_view")
-        #self.build_portfolio()
-        #self.build_transactions()
-        """
-        self.progress_bar = builder.get_object("progress_bar")
-        self.header = builder.get_object("header")
-        button = Gtk.Button()
-        icon = Gio.ThemedIcon(name="mail-send-receive-symbolic")
-        image = Gtk.Image.new_from_gicon(icon, Gtk.IconSize.BUTTON)
-        button.add(image)
-        self.header.pack_end(button)
-        """
+        self.main_menu.show_all()
         self.window.show_all()
-
-    def build_portfolio(self):
-        store = Gtk.ListStore(str, str, float)
-        store.append(["Datadog",
-                         "DDOG", 70.05])
-        portfolio_view = self.builder.get_object("portfolio_view")
-        portfolio_view.set_model(store)
-
-        renderer = Gtk.CellRendererText()
-        italic_renderer = Gtk.CellRendererText(
-            style=Pango.Style.ITALIC,
-            alignment=Pango.Alignment.RIGHT,
-        )
-        columns = [
-            Gtk.TreeViewColumn("Stock", renderer, text=0),
-            Gtk.TreeViewColumn("Symbol", renderer, text=1),
-            Gtk.TreeViewColumn("Price", italic_renderer, text=2),
-        ]
-        for col in columns:
-            portfolio_view.append_column(col)
-        
 
     def on_destroy(self, *args):
         Gtk.main_quit()
@@ -76,32 +50,34 @@ class Main(object):
         response = dialog.run()
         if response == Gtk.ResponseType.OK:
             csv_file = dialog.get_filename()
-            print("file selected:", csv_file)
-            csv_importer = Importer(csv_file)
-            transations_data = csv_importer.import_csv()
-            portfolio = Portfolio(transations_data)
-            portfolio_data = portfolio.plain_view()
-            self.populate(
-                self.transactions_view,
-                transations_data,
-                [
-                    "Date_Time",  # move to settings
-                    "Product",
-                    "Exchange",
-                    "Number",
-                    "Price",
-                    "Local value",
-                    "Value",
-                    "Exchange rate",
-                    "Fee",
-                    "Total",
-                ]
-                )
-            self.populate(
-                self.portfolio_view,
-                portfolio_data,
-            )
+            self.load_csv(csv_file)
         dialog.hide()
+
+    def load_csv(self, filename):
+        csv_importer = Importer(filename)
+        transations_data = csv_importer.import_csv()
+        portfolio = Portfolio(transations_data)
+        portfolio_data = portfolio.plain_view()
+        self.populate(
+            self.transactions_view,
+            transations_data,
+            [
+                "Date_Time",  # move to settings
+                "Product",
+                "Exchange",
+                "Number",
+                "Price",
+                "Local value",
+                "Value",
+                "Exchange rate",
+                "Fee",
+                "Total",
+            ]
+            )
+        self.populate(
+            self.portfolio_view,
+            portfolio_data,
+        )
 
     def populate(self, view, data, cols=None):
         """Populates given view with the data"""
