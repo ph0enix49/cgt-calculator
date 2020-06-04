@@ -33,8 +33,8 @@ class Main(object):
         #self.progress_bar.set_fraction(self.progress_bar.get_fraction() + 0.01)
         self.add_dialog.run()
 
-    def on_cancel_clicked(self, button):
-        self.add_dialog.destroy()
+    def on_cancel_clicked(self, button, *args):
+        self.add_dialog.hide()
 
     def on_import_clicked(self, button):
         dialog = Gtk.FileChooserDialog(
