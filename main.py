@@ -14,11 +14,10 @@ class Main(object):
         self.builder.connect_signals(self)
         self.main_box = self.builder.get_object("main_box")
         self.window = self.builder.get_object("main_window")
+        self.add_dialog = self.builder.get_object("add_dialog")
         self.main_menu = self.builder.get_object("main_menu")
         self.menu_button = self.builder.get_object("menu_button")
         self.header = self.builder.get_object("header")
-        test_menu = Gtk.MenuItem(label="lp")
-        self.main_menu.append(test_menu)
         self.portfolio_view = self.builder.get_object("portfolio_view")
         self.transactions_view = self.builder.get_object("transactions_view")
         self.main_menu.show_all()
@@ -27,10 +26,16 @@ class Main(object):
     def on_destroy(self, *args):
         Gtk.main_quit()
 
-    def on_button_clicked(self, button):
+    def on_calculate_clicked(self, button):
+        print("1 mil!")
+
+    def on_add_clicked(self, button):
         #self.progress_bar.set_fraction(self.progress_bar.get_fraction() + 0.01)
-        print("Hello World!")
-    
+        self.add_dialog.run()
+
+    def on_cancel_clicked(self, button):
+        self.add_dialog.destroy()
+
     def on_import_clicked(self, button):
         dialog = Gtk.FileChooserDialog(
             title="Please choose a file",
