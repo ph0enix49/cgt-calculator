@@ -1,10 +1,15 @@
 import gi
+import os
+
+import pandas as pd
 
 gi.require_version("Gtk", "3.0")
 from gi.repository import Gtk, Gio, Pango
 
 from lib.io import Importer
 from lib.portfolio import Portfolio
+
+STORE_FILE = "data.csv"
 
 
 class Main(object):
@@ -20,8 +25,21 @@ class Main(object):
         self.header = self.builder.get_object("header")
         self.portfolio_view = self.builder.get_object("portfolio_view")
         self.transactions_view = self.builder.get_object("transactions_view")
+        self._transactions_df = None
+        if os.path.isfile(STORE_FILE):
+            self.load_csv()
         self.main_menu.show_all()
         self.window.show_all()
+
+    @property
+    def transactions_df(self):
+        if self._transactions_df is None:
+            self._transactions_df = pd.read_csv(STORE_FILE)
+        return self._transactions_df
+
+    @transactions_df.setter
+    def transactions_df(self, dataframe):
+        dataframe.to_csv(STORE_FILE)
 
     def on_destroy(self, *args):
         Gtk.main_quit()
@@ -58,14 +76,15 @@ class Main(object):
             self.load_csv(csv_file)
         dialog.hide()
 
-    def load_csv(self, filename):
-        csv_importer = Importer(filename)
-        transations_data = csv_importer.import_csv()
-        portfolio = Portfolio(transations_data)
+    def load_csv(self, filename=None):
+        if filename:
+            csv_importer = Importer(filename)
+            self.transactions_df = csv_importer.import_csv()
+        portfolio = Portfolio(self.transactions_df)
         portfolio_data = portfolio.plain_view()
         self.populate(
             self.transactions_view,
-            transations_data,
+            self.transactions_df,
             [
                 "Date_Time",  # move to settings
                 "Product",
