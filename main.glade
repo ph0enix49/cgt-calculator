@@ -42,6 +42,7 @@
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
                 <property name="receives_default">True</property>
+                <signal name="clicked" handler="on_add_transaction_clicked" swapped="no"/>
               </object>
               <packing>
                 <property name="expand">True</property>
@@ -127,7 +128,7 @@
               </packing>
             </child>
             <child>
-              <object class="GtkEntry">
+              <object class="GtkEntry" id="add_price">
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
                 <property name="truncate_multiline">True</property>
@@ -139,7 +140,7 @@
               </packing>
             </child>
             <child>
-              <object class="GtkSpinButton">
+              <object class="GtkSpinButton" id="add_number_of_items">
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
                 <property name="adjustment">adjustment1</property>
@@ -152,7 +153,7 @@
               </packing>
             </child>
             <child>
-              <object class="GtkSearchEntry">
+              <object class="GtkSearchEntry" id="add_product_name">
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
                 <property name="primary_icon_name">edit-find-symbolic</property>
@@ -165,7 +166,7 @@
               </packing>
             </child>
             <child>
-              <object class="GtkSearchEntry">
+              <object class="GtkSearchEntry" id="add_isin">
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
                 <property name="primary_icon_name">edit-find-symbolic</property>
@@ -180,6 +181,7 @@
             <child>
               <object class="GtkComboBox">
                 <property name="visible">True</property>
+                <property name="sensitive">False</property>
                 <property name="can_focus">False</property>
               </object>
               <packing>
@@ -188,7 +190,7 @@
               </packing>
             </child>
             <child>
-              <object class="GtkEntry">
+              <object class="GtkEntry" id="add_date_time">
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
                 <property name="primary_icon_tooltip_text" translatable="yes">Please enter in correct format</property>

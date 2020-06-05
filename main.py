@@ -54,6 +54,14 @@ class Main(object):
     def on_cancel_clicked(self, button, *args):
         self.add_dialog.hide()
 
+    def on_add_transaction_clicked(self, button):
+        product_name = self.builder.get_object("add_product_name").get_text()
+        isin = self.builder.get_object("add_isin").get_text()
+        price = self.builder.get_object("add_price").get_text()
+        number_of_items = self.builder.get_object("add_number_of_items").get_text()
+        date_time = self.builder.get_object("add_date_time").get_text()
+        print(product_name, isin, price, number_of_items, date_time)
+
     def on_import_clicked(self, button):
         dialog = Gtk.FileChooserDialog(
             title="Please choose a file",
