@@ -234,8 +234,46 @@
       </object>
     </child>
   </object>
+  <object class="GtkListStore" id="portfolio_store">
+    <columns>
+      <!-- column-name product -->
+      <column type="gchararray"/>
+      <!-- column-name isin -->
+      <column type="gchararray"/>
+      <!-- column-name number -->
+      <column type="gint"/>
+      <!-- column-name price -->
+      <column type="gfloat"/>
+    </columns>
+  </object>
+  <object class="GtkListStore" id="transactions_store">
+    <columns>
+      <!-- column-name date_time -->
+      <column type="gchararray"/>
+      <!-- column-name product -->
+      <column type="gchararray"/>
+      <!-- column-name exchange -->
+      <column type="gchararray"/>
+      <!-- column-name number -->
+      <column type="gint"/>
+      <!-- column-name price -->
+      <column type="gfloat"/>
+      <!-- column-name local_value -->
+      <column type="gfloat"/>
+      <!-- column-name value -->
+      <column type="gfloat"/>
+      <!-- column-name exchange_rate -->
+      <column type="gfloat"/>
+      <!-- column-name fee -->
+      <column type="gfloat"/>
+      <!-- column-name total -->
+      <column type="gfloat"/>
+    </columns>
+  </object>
   <object class="GtkWindow" id="main_window">
     <property name="can_focus">False</property>
+    <property name="default_width">800</property>
+    <property name="default_height">600</property>
     <signal name="destroy" handler="on_destroy" swapped="no"/>
     <child>
       <object class="GtkBox" id="main_box">
@@ -262,6 +300,7 @@
                   <object class="GtkTreeView" id="portfolio_view">
                     <property name="visible">True</property>
                     <property name="can_focus">True</property>
+                    <property name="model">portfolio_store</property>
                     <child internal-child="selection">
                       <object class="GtkTreeSelection"/>
                     </child>
@@ -288,6 +327,7 @@
                   <object class="GtkTreeView" id="transactions_view">
                     <property name="visible">True</property>
                     <property name="can_focus">True</property>
+                    <property name="model">transactions_store</property>
                     <property name="reorderable">True</property>
                     <property name="enable_grid_lines">both</property>
                     <property name="enable_tree_lines">True</property>

@@ -25,7 +25,9 @@ class Main(object):
         self.header = self.builder.get_object("header")
         self.portfolio_view = self.builder.get_object("portfolio_view")
         self.transactions_view = self.builder.get_object("transactions_view")
-        self._transactions_df = None
+        self.transactions_store = self.builder.get_object("transactions_store")
+        self.portfolio_store = self.builder.get_object("portfolio_store")
+        self._transactions_df = pd.DataFrame()
         if os.path.isfile(STORE_FILE):
             self.load_csv()
         self.main_menu.show_all()
@@ -33,12 +35,13 @@ class Main(object):
 
     @property
     def transactions_df(self):
-        if self._transactions_df is None:
+        if self._transactions_df.empty:
             self._transactions_df = pd.read_csv(STORE_FILE)
         return self._transactions_df
 
     @transactions_df.setter
     def transactions_df(self, dataframe):
+        self._transactions_df = dataframe
         dataframe.to_csv(STORE_FILE)
 
     def on_destroy(self, *args):
@@ -57,10 +60,21 @@ class Main(object):
     def on_add_transaction_clicked(self, button):
         product_name = self.builder.get_object("add_product_name").get_text()
         isin = self.builder.get_object("add_isin").get_text()
-        price = self.builder.get_object("add_price").get_text()
-        number_of_items = self.builder.get_object("add_number_of_items").get_text()
-        date_time = self.builder.get_object("add_date_time").get_text()
-        print(product_name, isin, price, number_of_items, date_time)
+        price = int(self.builder.get_object("add_price").get_text())
+        number_of_items = int(self.builder.get_object("add_number_of_items").get_text())
+        date_time = pd.to_datetime(
+            self.builder.get_object("add_date_time").get_text(),
+            infer_datetime_format=True
+        )
+        self.transactions_df = self.transactions_df.append(
+            {
+                "Date_Time": date_time,
+                "Product": product_name,
+                "ISIN": isin,
+                "Price": price,
+                "Number": number_of_items,
+            }, ignore_index=True)
+        self.add_dialog.hide()
 
     def on_import_clicked(self, button):
         dialog = Gtk.FileChooserDialog(
@@ -93,6 +107,7 @@ class Main(object):
         self.populate(
             self.transactions_view,
             self.transactions_df,
+            self.transactions_store,
             [
                 "Date_Time",  # move to settings
                 "Product",
@@ -109,17 +124,17 @@ class Main(object):
         self.populate(
             self.portfolio_view,
             portfolio_data,
+            self.portfolio_store
         )
 
-    def populate(self, view, data, cols=None):
+    def populate(self, view, data, store, cols=None):
         """Populates given view with the data"""
+        # TODO convert stores to properties to properly update
         if cols:
             data = data[cols]
-        # create a store
-        store = Gtk.ListStore(*([str] * len(data.columns)))
-        for row in data.values:
-            converted = [str(x) for x in row]
-            store.append(converted)
+        rows = (row for _, row in data.iterrows())
+        for row in rows:
+            store.append(list(row))
         view.set_model(store)
         renderer = Gtk.CellRendererText()
         for index, column in enumerate(data.columns):
