@@ -73,7 +73,13 @@ class Main(object):
                 "ISIN": isin,
                 "Price": price,
                 "Number": number_of_items,
+                "Exchange": "NYSE",  # placeholders
+                "Local value": price * number_of_items,
+                "Value": price * number_of_items,
+                "Fee": 0,
+                "Total": price * number_of_items,
             }, ignore_index=True)
+        self.load_csv()
         self.add_dialog.hide()
 
     def on_import_clicked(self, button):
@@ -133,7 +139,9 @@ class Main(object):
         if cols:
             data = data[cols]
         rows = (row for _, row in data.iterrows())
+        store.clear()
         for row in rows:
+            row[0] = str(row[0])  # convert datetime to str
             store.append(list(row))
         view.set_model(store)
         renderer = Gtk.CellRendererText()
@@ -141,6 +149,7 @@ class Main(object):
             view.append_column(
                 Gtk.TreeViewColumn(column, renderer, text=index),
             )
+
 
 if __name__ == "__main__":
     main = Main()
