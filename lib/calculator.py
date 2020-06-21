@@ -17,7 +17,6 @@ class Calculator(object):
                 for row in group.sort_values(by="Date_Time").itertuples(index=False)
             )
             for row in rows:
-                print(row)
                 if row.Number > 0:
                     t = Transaction(
                         row.Date_Time,
@@ -31,7 +30,7 @@ class Calculator(object):
                 elif row.Number < 0:
                     q.sell(row.Date_Time, row.Number, row.Price)
 
-    def get_gains(self):
+    def print_gains(self):
         for q in self.queues:
             if len(q.gain) > 0:
                 print(q)

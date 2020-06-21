@@ -3,9 +3,12 @@ import os
 
 import pandas as pd
 
+from datetime import datetime
+
 gi.require_version("Gtk", "3.0")
 from gi.repository import Gtk, Gio, Pango
 
+from lib.calculator import Calculator
 from lib.io import Importer
 from lib.portfolio import Portfolio
 
@@ -23,6 +26,7 @@ class Main(object):
         self.main_menu = self.builder.get_object("main_menu")
         self.menu_button = self.builder.get_object("menu_button")
         self.header = self.builder.get_object("header")
+        self.cgt_view = self.builder.get_object("cgt_view")
         self.portfolio_view = self.builder.get_object("portfolio_view")
         self.transactions_view = self.builder.get_object("transactions_view")
         self.transactions_store = self.builder.get_object("transactions_store")
@@ -48,7 +52,17 @@ class Main(object):
         Gtk.main_quit()
 
     def on_calculate_clicked(self, button):
-        print("1 mil!")
+        calculator = Calculator(self.transactions_df)
+        calculator.calculate()
+        years = [
+            year
+            for year in range(
+                min(self.transactions_df.Date_Time).year,
+                max(self.transactions_df.Date_Time).year + 1
+            )
+        ]
+        store = Gtk.ListStore(str, str, float)
+
 
     def on_add_clicked(self, button):
         #self.progress_bar.set_fraction(self.progress_bar.get_fraction() + 0.01)
