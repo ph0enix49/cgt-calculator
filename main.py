@@ -23,6 +23,7 @@ class Main(object):
         self.main_box = self.builder.get_object("main_box")
         self.window = self.builder.get_object("main_window")
         self.add_dialog = self.builder.get_object("add_dialog")
+        self.cgt_dialog = self.builder.get_object("cgt_dialog")
         self.main_menu = self.builder.get_object("main_menu")
         self.menu_button = self.builder.get_object("menu_button")
         self.header = self.builder.get_object("header")
@@ -40,13 +41,17 @@ class Main(object):
     @property
     def transactions_df(self):
         if self._transactions_df.empty:
-            self._transactions_df = pd.read_csv(STORE_FILE)
+            self._transactions_df = pd.read_csv(
+                STORE_FILE,
+                parse_dates=[0],
+                infer_datetime_format=True
+            )
         return self._transactions_df
 
     @transactions_df.setter
     def transactions_df(self, dataframe):
         self._transactions_df = dataframe
-        dataframe.to_csv(STORE_FILE)
+        dataframe.to_csv(STORE_FILE, index=False)
 
     def on_destroy(self, *args):
         Gtk.main_quit()
@@ -61,8 +66,35 @@ class Main(object):
                 max(self.transactions_df.Date_Time).year + 1
             )
         ]
-        store = Gtk.ListStore(str, str, float)
-
+        store = Gtk.ListStore(str, *([int] * len(years)))
+        for product in calculator.queues:
+            if len(product.gain) > 0:
+                store.append(
+                    [
+                        product.name,
+                        *([product.gain[year] for year in years]),
+                        sum(product.gain.values())
+                    ]
+                )
+        
+        self.cgt_view.set_model(store)
+        renderer = Gtk.CellRendererText()
+        # populate columns if not already
+        if not self.cgt_view.get_columns():
+            self.cgt_view.append_column(
+                Gtk.TreeViewColumn("Product", renderer, text=0),
+            )
+            for index, year in enumerate(years):
+                self.cgt_view.append_column(
+                Gtk.TreeViewColumn(year, renderer, text=index+1),
+                )
+            self.cgt_view.append_column(
+                Gtk.TreeViewColumn("Total", renderer, text=len(years)+1),
+            )
+        self.cgt_dialog.run()
+    
+    def on_close_clicked(self, button, *args):
+        self.cgt_dialog.hide()
 
     def on_add_clicked(self, button):
         #self.progress_bar.set_fraction(self.progress_bar.get_fraction() + 0.01)

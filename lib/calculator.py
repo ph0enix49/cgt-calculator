@@ -34,6 +34,21 @@ class Calculator(object):
         for q in self.queues:
             if len(q.gain) > 0:
                 print(q)
+    
+    def get_gains(self):
+        # returns gains as a pd.DataFrame
+        years = [
+            year
+            for year in range(
+                min(self.df.Date_Time).year,
+                max(self.df.Date_Time).year + 1
+            )
+        ]
+        d = {}
+        for product in self.queues:
+            if len(product.gain) > 0:
+                d[product] = [product.gain[year] for year in years]
+        return d
 
 
 
