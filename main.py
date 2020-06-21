@@ -59,24 +59,11 @@ class Main(object):
     def on_calculate_clicked(self, button):
         calculator = Calculator(self.transactions_df)
         calculator.calculate()
-        years = [
-            year
-            for year in range(
-                min(self.transactions_df.Date_Time).year,
-                max(self.transactions_df.Date_Time).year + 1
-            )
-        ]
-        store = Gtk.ListStore(str, *([int] * len(years)))
-        for product in calculator.queues:
-            if len(product.gain) > 0:
-                store.append(
-                    [
-                        product.name,
-                        *([product.gain[year] for year in years]),
-                        sum(product.gain.values())
-                    ]
-                )
-        
+        gains = calculator.get_gains()
+        store = Gtk.ListStore(str, *([int] * (len(gains.columns) - 1)))
+        for _, row in gains.iterrows():
+            row["index"] = str(row["index"])  # convert Queue to str
+            store.append(list(row))
         self.cgt_view.set_model(store)
         renderer = Gtk.CellRendererText()
         # populate columns if not already
@@ -84,12 +71,12 @@ class Main(object):
             self.cgt_view.append_column(
                 Gtk.TreeViewColumn("Product", renderer, text=0),
             )
-            for index, year in enumerate(years):
+            for index, year in enumerate(gains.columns[1:-1]):
                 self.cgt_view.append_column(
                 Gtk.TreeViewColumn(year, renderer, text=index+1),
                 )
             self.cgt_view.append_column(
-                Gtk.TreeViewColumn("Total", renderer, text=len(years)+1),
+                Gtk.TreeViewColumn("Total", renderer, text=len(gains.columns)-1),
             )
         self.cgt_dialog.run()
     
@@ -184,9 +171,8 @@ class Main(object):
         # TODO convert stores to properties to properly update
         if cols:
             data = data[cols]
-        rows = (row for _, row in data.iterrows())
         store.clear()
-        for row in rows:
+        for _, row in data.iterrows():
             row[0] = str(row[0])  # convert datetime to str
             store.append(list(row))
         view.set_model(store)

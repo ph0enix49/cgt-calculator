@@ -1,3 +1,5 @@
+import pandas as pd
+
 from collections import defaultdict
 
 
@@ -33,7 +35,12 @@ class Calculator(object):
     def print_gains(self):
         for q in self.queues:
             if len(q.gain) > 0:
-                print(q)
+                print(
+                    "{}:\n{}".format(
+                        q.name,
+                        "\n".join(["\t{}: {}".format(year, gain) for year, gain in q.gain.items()])
+                    )
+                )
     
     def get_gains(self):
         # returns gains as a pd.DataFrame
@@ -48,8 +55,14 @@ class Calculator(object):
         for product in self.queues:
             if len(product.gain) > 0:
                 d[product] = [product.gain[year] for year in years]
-        return d
-
+        df = pd.DataFrame.from_dict(d, orient="index",
+            columns=years)
+        # calculate totals
+        df = df.append(pd.DataFrame({"Grand Totals": df.agg("sum")}).transpose())
+        df["Total"] = df.agg("sum", axis="columns")
+        # move index to columns
+        df.reset_index(level=df.index.names, inplace=True)
+        return df
 
 
 class Transaction(object):
@@ -73,10 +86,7 @@ class Queue(object):
         self.gain = defaultdict(int)  # year: value
 
     def __str__(self):
-        return "{}:\n{}".format(
-            self.name,
-            "\n".join(["\t{}: {}".format(year, gain) for year, gain in self.gain.items()])
-        )
+        return self.name
 
     def __repr__(self):
         return self.name
