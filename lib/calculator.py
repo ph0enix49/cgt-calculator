@@ -19,18 +19,19 @@ class Calculator(object):
                 for row in group.sort_values(by="Date_Time").itertuples(index=False)
             )
             for row in rows:
+                final_price = row.Price / row._11
                 if row.Number > 0:
                     t = Transaction(
                         row.Date_Time,
                         row.Product,
                         row.ISIN,
                         row.Number,
-                        row.Price,
+                        final_price,
                         row.Fee,
                     )
                     q.buy(t)
                 elif row.Number < 0:
-                    q.sell(row.Date_Time, row.Number, row.Price)
+                    q.sell(row.Date_Time, row.Number, final_price)
 
     def print_gains(self):
         for q in self.queues:
@@ -71,7 +72,7 @@ class Transaction(object):
         self.product = product
         self.isin = isin
         self.number = number
-        self.local_price = local_price
+        self.local_price = local_price  # includes all necessary conversions and fees
         self.fee = fee
     
     def __str__(self):
@@ -99,10 +100,10 @@ class Queue(object):
         while number > 0:
             transaction = self.queue[0]
             if number >= transaction.number:
-                self.gain[date_time.year] += (price - transaction.local_price) * transaction.number
+                self.gain[date_time.year] += ((price - transaction.local_price) * transaction.number) + transaction.fee
                 number -= transaction.number
                 self.queue.pop(0)
             elif number < transaction.number:
-                self.gain[date_time.year] += (price - transaction.local_price) * number
+                self.gain[date_time.year] += ((price - transaction.local_price) * number) + transaction.fee
                 transaction.number -= number
                 number = 0
