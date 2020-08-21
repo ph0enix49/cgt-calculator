@@ -1,3 +1,5 @@
+import math
+
 import pandas as pd
 
 from collections import defaultdict
@@ -64,7 +66,25 @@ class Calculator(object):
         # move index to columns
         df.reset_index(level=df.index.names, inplace=True)
         return df
-
+    
+    def get_cgt(self, gains):
+        # calculate CGT for given gains
+        cgt = defaultdict(float)  # year: value
+        losses = 0  # never positive
+        for year, gain in gains.iloc[-1][1:-1].items():
+            gain = float(gain)
+            if losses < 0:
+                if abs(losses) < gain:
+                    gain = gain + losses
+                    losses = 0
+                else:
+                    losses = gain + losses
+                    gain = 0
+            if gain > 0:
+                cgt[year] = math.floor((gain - 1270) * 33 / 100)
+            else:
+                losses += gain
+        return cgt
 
 class Transaction(object):
     def __init__(self, date_time, product, isin, number, local_price, fee):

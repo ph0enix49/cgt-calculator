@@ -23,16 +23,19 @@ class Main(object):
         self.main_box = self.builder.get_object("main_box")
         self.window = self.builder.get_object("main_window")
         self.add_dialog = self.builder.get_object("add_dialog")
+        self.gains_dialog = self.builder.get_object("gains_dialog")
         self.cgt_dialog = self.builder.get_object("cgt_dialog")
+        self.cgt_results = self.builder.get_object("cgt_label")
         self.main_menu = self.builder.get_object("main_menu")
         self.menu_button = self.builder.get_object("menu_button")
         self.header = self.builder.get_object("header")
-        self.cgt_view = self.builder.get_object("cgt_view")
+        self.gains_view = self.builder.get_object("gains_view")
         self.portfolio_view = self.builder.get_object("portfolio_view")
         self.transactions_view = self.builder.get_object("transactions_view")
         self.transactions_store = self.builder.get_object("transactions_store")
         self.portfolio_store = self.builder.get_object("portfolio_store")
         self._transactions_df = pd.DataFrame()
+        self.calculator = Calculator(self.transactions_df)
         if os.path.isfile(STORE_FILE):
             self.load_csv()
         self.main_menu.show_all()
@@ -57,35 +60,44 @@ class Main(object):
         Gtk.main_quit()
 
     def on_calculate_clicked(self, button):
-        calculator = Calculator(self.transactions_df)
-        calculator.calculate()
-        gains = calculator.get_gains()
+        self.calculator.calculate()
+        self.gains = gains = self.calculator.get_gains()
         store = Gtk.ListStore(str, *([int] * (len(gains.columns) - 1)))
         for _, row in gains.iterrows():
             row["index"] = str(row["index"])  # convert Queue to str
             store.append(list(row))
-        self.cgt_view.set_model(store)
+        self.gains_view.set_model(store)
         renderer = Gtk.CellRendererText()
         # populate columns if not already
-        if not self.cgt_view.get_columns():
-            self.cgt_view.append_column(
+        if not self.gains_view.get_columns():
+            self.gains_view.append_column(
                 Gtk.TreeViewColumn("Product", renderer, text=0),
             )
             for index, year in enumerate(gains.columns[1:-1]):
-                self.cgt_view.append_column(
+                self.gains_view.append_column(
                 Gtk.TreeViewColumn(year, renderer, text=index+1),
                 )
-            self.cgt_view.append_column(
+            self.gains_view.append_column(
                 Gtk.TreeViewColumn("Total", renderer, text=len(gains.columns)-1),
             )
-        self.cgt_dialog.run()
+        self.gains_dialog.run()
     
     def on_close_clicked(self, button, *args):
+        self.gains_dialog.hide()
+    
+    def on_cgt_close_clicked(self, button, *args):
         self.cgt_dialog.hide()
 
     def on_add_clicked(self, button):
         #self.progress_bar.set_fraction(self.progress_bar.get_fraction() + 0.01)
         self.add_dialog.run()
+    
+    def on_calculate_cgt_clicked(self, button, *args):
+        # calculates actual CGT
+        cgt = self.calculator.get_cgt(self.gains)
+        result = "\n".join(["{}: €{}".format(k, v) for k, v in cgt.items()])
+        self.cgt_results.set_text(result)
+        self.cgt_dialog.run()
 
     def on_cancel_clicked(self, button, *args):
         self.add_dialog.hide()
