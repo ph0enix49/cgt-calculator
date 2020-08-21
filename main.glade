@@ -106,28 +106,6 @@
               </packing>
             </child>
             <child>
-              <object class="GtkLabel">
-                <property name="visible">True</property>
-                <property name="can_focus">False</property>
-                <property name="label" translatable="yes">Currency</property>
-              </object>
-              <packing>
-                <property name="left_attach">0</property>
-                <property name="top_attach">4</property>
-              </packing>
-            </child>
-            <child>
-              <object class="GtkLabel">
-                <property name="visible">True</property>
-                <property name="can_focus">False</property>
-                <property name="label" translatable="yes">Date &amp; time</property>
-              </object>
-              <packing>
-                <property name="left_attach">0</property>
-                <property name="top_attach">5</property>
-              </packing>
-            </child>
-            <child>
               <object class="GtkEntry" id="add_price">
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
@@ -179,10 +157,82 @@
               </packing>
             </child>
             <child>
-              <object class="GtkComboBox">
+              <object class="GtkEntry" id="add_date_time">
                 <property name="visible">True</property>
-                <property name="sensitive">False</property>
+                <property name="can_focus">True</property>
+                <property name="primary_icon_tooltip_text" translatable="yes">Please enter in correct format</property>
+                <property name="placeholder_text" translatable="yes">YYYY-MM-DD</property>
+              </object>
+              <packing>
+                <property name="left_attach">1</property>
+                <property name="top_attach">7</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkLabel">
+                <property name="visible">True</property>
                 <property name="can_focus">False</property>
+                <property name="label" translatable="yes">Fees</property>
+              </object>
+              <packing>
+                <property name="left_attach">0</property>
+                <property name="top_attach">4</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkLabel">
+                <property name="visible">True</property>
+                <property name="can_focus">False</property>
+                <property name="label" translatable="yes">Date &amp; time</property>
+              </object>
+              <packing>
+                <property name="left_attach">0</property>
+                <property name="top_attach">7</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkLabel">
+                <property name="visible">True</property>
+                <property name="can_focus">False</property>
+                <property name="label" translatable="yes">Exchange rate</property>
+              </object>
+              <packing>
+                <property name="left_attach">0</property>
+                <property name="top_attach">5</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkEntry" id="add_exchange_rate">
+                <property name="visible">True</property>
+                <property name="can_focus">True</property>
+                <property name="tooltip_text" translatable="yes">If using base currency, leave this as 1.0</property>
+                <property name="text" translatable="yes">1.0</property>
+                <property name="truncate_multiline">True</property>
+                <property name="input_purpose">number</property>
+              </object>
+              <packing>
+                <property name="left_attach">1</property>
+                <property name="top_attach">5</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkLabel">
+                <property name="visible">True</property>
+                <property name="can_focus">False</property>
+                <property name="label" translatable="yes">Stock exchange</property>
+              </object>
+              <packing>
+                <property name="left_attach">0</property>
+                <property name="top_attach">6</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkEntry" id="add_fees">
+                <property name="visible">True</property>
+                <property name="can_focus">True</property>
+                <property name="text" translatable="yes">0</property>
+                <property name="truncate_multiline">True</property>
+                <property name="input_purpose">number</property>
               </object>
               <packing>
                 <property name="left_attach">1</property>
@@ -190,16 +240,16 @@
               </packing>
             </child>
             <child>
-              <object class="GtkEntry" id="add_date_time">
+              <object class="GtkSearchEntry" id="add_stock_exchange">
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
-                <property name="primary_icon_tooltip_text" translatable="yes">Please enter in correct format</property>
-                <property name="placeholder_text" translatable="yes">YYYY-MM-DD</property>
-                <property name="input_purpose">digits</property>
+                <property name="primary_icon_name">edit-find-symbolic</property>
+                <property name="primary_icon_activatable">False</property>
+                <property name="primary_icon_sensitive">False</property>
               </object>
               <packing>
                 <property name="left_attach">1</property>
-                <property name="top_attach">5</property>
+                <property name="top_attach">6</property>
               </packing>
             </child>
           </object>
@@ -351,6 +401,11 @@
     <property name="can_focus">False</property>
     <property name="icon_name">document-new</property>
   </object>
+  <object class="GtkImage" id="image2">
+    <property name="visible">True</property>
+    <property name="can_focus">False</property>
+    <property name="icon_name">document-new</property>
+  </object>
   <object class="GtkMenu" id="main_menu">
     <property name="visible">True</property>
     <property name="can_focus">False</property>
@@ -459,7 +514,6 @@
                     <property name="visible">True</property>
                     <property name="can_focus">True</property>
                     <property name="model">transactions_store</property>
-                    <property name="reorderable">True</property>
                     <property name="enable_grid_lines">both</property>
                     <property name="enable_tree_lines">True</property>
                     <child internal-child="selection">
@@ -518,6 +572,22 @@
             </child>
             <child>
               <object class="GtkButton">
+                <property name="label" translatable="yes">Remove</property>
+                <property name="visible">True</property>
+                <property name="can_focus">True</property>
+                <property name="receives_default">True</property>
+                <property name="tooltip_text" translatable="yes">Remove a transaction</property>
+                <property name="image">image2</property>
+                <signal name="clicked" handler="on_remove_clicked" swapped="no"/>
+              </object>
+              <packing>
+                <property name="expand">False</property>
+                <property name="fill">True</property>
+                <property name="position">1</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkButton">
                 <property name="label" translatable="yes">Calculate Gains</property>
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
@@ -527,7 +597,7 @@
               <packing>
                 <property name="expand">False</property>
                 <property name="fill">True</property>
-                <property name="position">1</property>
+                <property name="position">2</property>
               </packing>
             </child>
             <child>
@@ -541,7 +611,7 @@
               <packing>
                 <property name="expand">False</property>
                 <property name="fill">True</property>
-                <property name="position">2</property>
+                <property name="position">3</property>
               </packing>
             </child>
           </object>

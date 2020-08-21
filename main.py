@@ -92,6 +92,13 @@ class Main(object):
         #self.progress_bar.set_fraction(self.progress_bar.get_fraction() + 0.01)
         self.add_dialog.run()
     
+    def on_remove_clicked(self, button):
+        # get the selection
+        # button only available for transactions
+        # confirmation dialog
+        # delete
+        pass
+
     def on_calculate_cgt_clicked(self, button, *args):
         # calculates actual CGT
         cgt = self.calculator.get_cgt(self.gains)
@@ -105,8 +112,11 @@ class Main(object):
     def on_add_transaction_clicked(self, button):
         product_name = self.builder.get_object("add_product_name").get_text()
         isin = self.builder.get_object("add_isin").get_text()
-        price = int(self.builder.get_object("add_price").get_text())
+        price = float(self.builder.get_object("add_price").get_text())
         number_of_items = int(self.builder.get_object("add_number_of_items").get_text())
+        exchange_rate = float(self.builder.get_object("add_exchange_rate").get_text())
+        fees = float(self.builder.get_object("add_fees").get_text())
+        stock_exchange = self.builder.get_object("add_stock_exchange").get_text()
         date_time = pd.to_datetime(
             self.builder.get_object("add_date_time").get_text(),
             infer_datetime_format=True
@@ -118,13 +128,14 @@ class Main(object):
                 "ISIN": isin,
                 "Price": price,
                 "Number": number_of_items,
-                "Exchange": "NYSE",  # placeholders
-                "Local value": price * number_of_items,
+                "Exchange": stock_exchange,
+                "Exchange rate": exchange_rate,
+                "Local value": (price * number_of_items) * exchange_rate,
                 "Value": price * number_of_items,
-                "Fee": 0,
+                "Fee": fees,
                 "Total": price * number_of_items,
             }, ignore_index=True)
-        self.load_csv()
+        #self.load_csv()
         self.add_dialog.hide()
 
     def on_import_clicked(self, button):
