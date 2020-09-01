@@ -33,7 +33,7 @@ class Calculator(object):
                     )
                     q.buy(t)
                 elif row.Number < 0:
-                    q.sell(row.Date_Time, row.Number, final_price)
+                    q.sell(row.Date_Time, row.Number, final_price, row.Fee)
 
     def print_gains(self):
         for q in self.queues:
@@ -93,7 +93,7 @@ class Transaction(object):
         self.isin = isin
         self.number = number
         self.local_price = local_price  # includes all necessary conversions
-        self.fee = fee
+        self.fee = fee  # always negative
     
     def __str__(self):
         return "{}-{}-{}".format(self.date_time, self.number, self.local_price)
@@ -115,15 +115,20 @@ class Queue(object):
     def buy(self, transaction):
         self.queue.append(transaction)
 
-    def sell(self, date_time, number, price):
+    def sell(self, date_time, number, price, fee):
         number = abs(number)
         while number > 0:
+            # get an earliest transaction for this stock
             transaction = self.queue[0]
+            # if we sold more or eq than in current transaction, we consume whole transaction and its fee
             if number >= transaction.number:
-                self.gain[date_time.year] += ((price - transaction.local_price) * transaction.number) - transaction.fee
+                # ensure to capture both fees when buy == whatever is left in stock
+                total_fee = (transaction.fee + fee) if number == transaction.number else transaction.fee
+                self.gain[date_time.year] += ((price - transaction.local_price) * transaction.number) + total_fee
                 number -= transaction.number
                 self.queue.pop(0)
+            # else we reduce number of stocks in current transaction as well as keep its fee
             elif number < transaction.number:
-                self.gain[date_time.year] += ((price - transaction.local_price) * number) - transaction.fee
+                self.gain[date_time.year] += ((price - transaction.local_price) * number) + fee
                 transaction.number -= number
                 number = 0
