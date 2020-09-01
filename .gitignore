@@ -129,4 +129,4 @@ dmypy.json
 
 *.glade~
 .vscode
-*.csv
+data.csv
