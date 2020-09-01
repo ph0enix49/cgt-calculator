@@ -21,7 +21,7 @@ class Calculator(object):
                 for row in group.sort_values(by="Date_Time").itertuples(index=False)
             )
             for row in rows:
-                final_price = row.Price / row._11
+                final_price = row.Price / row._11  # _11 is exchange rate
                 if row.Number > 0:
                     t = Transaction(
                         row.Date_Time,
@@ -92,7 +92,7 @@ class Transaction(object):
         self.product = product
         self.isin = isin
         self.number = number
-        self.local_price = local_price  # includes all necessary conversions and fees
+        self.local_price = local_price  # includes all necessary conversions
         self.fee = fee
     
     def __str__(self):
@@ -120,10 +120,10 @@ class Queue(object):
         while number > 0:
             transaction = self.queue[0]
             if number >= transaction.number:
-                self.gain[date_time.year] += ((price - transaction.local_price) * transaction.number) + transaction.fee
+                self.gain[date_time.year] += ((price - transaction.local_price) * transaction.number) - transaction.fee
                 number -= transaction.number
                 self.queue.pop(0)
             elif number < transaction.number:
-                self.gain[date_time.year] += ((price - transaction.local_price) * number) + transaction.fee
+                self.gain[date_time.year] += ((price - transaction.local_price) * number) - transaction.fee
                 transaction.number -= number
                 number = 0

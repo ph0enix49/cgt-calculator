@@ -93,6 +93,7 @@ class Main(object):
         self.add_dialog.run()
     
     def on_remove_clicked(self, button):
+        # TODO
         # get the selection
         # button only available for transactions
         # confirmation dialog
@@ -115,7 +116,7 @@ class Main(object):
         price = float(self.builder.get_object("add_price").get_text())
         number_of_items = int(self.builder.get_object("add_number_of_items").get_text())
         exchange_rate = float(self.builder.get_object("add_exchange_rate").get_text())
-        fees = float(self.builder.get_object("add_fees").get_text())
+        fees = (float(self.builder.get_object("add_fees").get_text())) * -1
         stock_exchange = self.builder.get_object("add_stock_exchange").get_text()
         date_time = pd.to_datetime(
             self.builder.get_object("add_date_time").get_text(),
@@ -130,12 +131,12 @@ class Main(object):
                 "Number": number_of_items,
                 "Exchange": stock_exchange,
                 "Exchange rate": exchange_rate,
-                "Local value": (price * number_of_items) * exchange_rate,
-                "Value": price * number_of_items,
+                "Local value": (price * number_of_items) * exchange_rate * -1,
+                "Value": price * number_of_items * -1,
                 "Fee": fees,
-                "Total": price * number_of_items,
+                "Total": price * number_of_items * -1,
             }, ignore_index=True)
-        #self.load_csv()
+        self.load_csv()
         self.add_dialog.hide()
 
     def on_import_clicked(self, button):
@@ -181,12 +182,12 @@ class Main(object):
                 "Exchange rate",
                 "Fee",
                 "Total",
-            ]
-            )
+            ],
+        )
         self.populate(
             self.portfolio_view,
             portfolio_data,
-            self.portfolio_store
+            self.portfolio_store,
         )
 
     def populate(self, view, data, store, cols=None):
@@ -199,11 +200,12 @@ class Main(object):
             row[0] = str(row[0])  # convert datetime to str
             store.append(list(row))
         view.set_model(store)
-        renderer = Gtk.CellRendererText()
-        for index, column in enumerate(data.columns):
-            view.append_column(
-                Gtk.TreeViewColumn(column, renderer, text=index),
-            )
+        if not view.get_columns():
+            renderer = Gtk.CellRendererText()
+            for index, column in enumerate(data.columns):
+                view.append_column(
+                    Gtk.TreeViewColumn(column, renderer, text=index),
+                )
 
 
 if __name__ == "__main__":
