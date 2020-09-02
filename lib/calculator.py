@@ -96,7 +96,7 @@ class Transaction(object):
         self.fee = fee  # always negative
     
     def __str__(self):
-        return "{}-{}-{}".format(self.date_time, self.number, self.local_price)
+        return "{} {} {} {}".format(self.date_time, self.product, self.number, self.local_price)
 
 
 class Queue(object):
@@ -118,15 +118,20 @@ class Queue(object):
     def sell(self, date_time, number, price, fee):
         number = abs(number)
         while number > 0:
-            # get an earliest transaction for this stock
-            transaction = self.queue[0]
+            # if there was a transaction within 4 weeks, get that instead
+            if date_time - pd.Timedelta(weeks=4) <= self.queue[-1].date_time:
+                ind = -1
+            # otherwise get an earliest transaction for this stock
+            else:
+                ind = 0
+            transaction = self.queue[ind]
             # if we sold more or eq than in current transaction, we consume whole transaction and its fee
             if number >= transaction.number:
                 # ensure to capture both fees when buy == whatever is left in stock
                 total_fee = (transaction.fee + fee) if number == transaction.number else transaction.fee
                 self.gain[date_time.year] += ((price - transaction.local_price) * transaction.number) + total_fee
                 number -= transaction.number
-                self.queue.pop(0)
+                self.queue.pop(ind)
             # else we reduce number of stocks in current transaction as well as keep its fee
             elif number < transaction.number:
                 self.gain[date_time.year] += ((price - transaction.local_price) * number) + fee

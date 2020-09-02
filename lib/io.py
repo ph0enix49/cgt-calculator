@@ -11,6 +11,7 @@ class Importer(object):
             self.filename,
             parse_dates=[[0,1]],
             infer_datetime_format=True,
+            dayfirst=True,
         )
         out = out.fillna(value={
             "Exchange rate": 1.0,
