@@ -44,11 +44,12 @@ class Main(object):
     @property
     def transactions_df(self):
         if self._transactions_df.empty:
-            self._transactions_df = pd.read_csv(
-                STORE_FILE,
-                parse_dates=[0],
-                infer_datetime_format=True
-            )
+            if os.path.exists(STORE_FILE):
+                self._transactions_df = pd.read_csv(
+                    STORE_FILE,
+                    parse_dates=[0],
+                    infer_datetime_format=True
+                )
         return self._transactions_df
 
     @transactions_df.setter
