@@ -129,12 +129,12 @@ class Main(object):
                 "Product": product_name,
                 "ISIN": isin,
                 "Price": price,
-                "Number": number_of_items,
-                "Exchange": stock_exchange,
+                "Quantity": number_of_items,
+                "Reference exchange": stock_exchange,
                 "Exchange rate": exchange_rate,
                 "Local value": (price * number_of_items) * exchange_rate * -1,
                 "Value": price * number_of_items * -1,
-                "Fee": fees,
+                "Transaction": fees,
                 "Total": price * number_of_items * -1,
             }, ignore_index=True)
         self.load_csv()
@@ -175,13 +175,13 @@ class Main(object):
             [
                 "Date_Time",  # move to settings
                 "Product",
-                "Exchange",
-                "Number",
+                "Reference exchange",
+                "Quantity",
                 "Price",
                 "Local value",
                 "Value",
                 "Exchange rate",
-                "Fee",
+                "Transaction",
                 "Total",
             ],
         )

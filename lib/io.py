@@ -15,6 +15,6 @@ class Importer(object):
         )
         out = out.fillna(value={
             "Exchange rate": 1.0,
-            "Fee": 0,
+            "Transaction": 0,
         })
         return out

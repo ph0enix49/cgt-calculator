@@ -22,18 +22,18 @@ class Calculator(object):
             )
             for row in rows:
                 final_price = row.Price / row._11  # _11 is exchange rate
-                if row.Number > 0:
+                if row.Quantity > 0:
                     t = Transaction(
                         row.Date_Time,
                         row.Product,
                         row.ISIN,
-                        row.Number,
+                        row.Quantity,
                         final_price,
-                        row.Fee,
+                        row.Transaction,
                     )
                     q.buy(t)
-                elif row.Number < 0:
-                    q.sell(row.Date_Time, row.Number, final_price, row.Fee)
+                elif row.Quantity < 0:
+                    q.sell(row.Date_Time, row.Quantity, final_price, row.Transaction)
 
     def print_gains(self):
         for q in self.queues:

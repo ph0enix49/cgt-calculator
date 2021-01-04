@@ -1,4 +1,4 @@
-Date,Time,Product,ISIN,Exchange,Number,,Price,,Local value,,Value,Exchange rate,,Fee,,Total,Order ID
+Date,Time,Product,ISIN,Reference exchange,Quantity,,Price,,Local value,,Value,Exchange rate,,Transaction,,Total,Order ID
 01-10-2020,21:03,Oranges,US88160R1014,NDQ,-5,USD,50,USD,250,EUR,209.713950171965,1.1921,EUR,-0.52,EUR,209.193950171965,8cdcd2a0-5a28-42f0-871f-bcb5d95dc72d
 30-06-2020,21:02,Apples,US0378331005,NDQ,-3,USD,110,USD,330,EUR,276.799194765979,1.1922,EUR,-0.53,EUR,276.269194765979,9cdcd2a0-5a28-42f0-871f-bcb5d95dc72d
 02-01-2020,00:00,Oranges,US88160R1014,NDQ,-5,USD,80,USD,400,EUR,335.120643431635,1.1936,EUR,-0.2,EUR,334.920643431635,10cdcd2a0-5a28-42f0-871f-bcb5d95dc72d

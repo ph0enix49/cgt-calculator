@@ -11,11 +11,11 @@ class Portfolio(object):
         pivot = pd.pivot_table(
             self.transactions,
             index=["Product", "ISIN"],
-            values=["Number", "Price"],
-            aggfunc={"Number": np.sum, "Price": np.mean},
+            values=["Quantity", "Price"],
+            aggfunc={"Quantity": np.sum, "Price": np.mean},
         )
         # select only open positions
-        pivot = pivot.loc[pivot["Number"] > 0]
+        pivot = pivot.loc[pivot["Quantity"] > 0]
         # move index into columns
         pivot.reset_index(level=pivot.index.names, inplace=True)
         return pivot
